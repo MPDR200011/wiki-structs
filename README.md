@@ -1,0 +1,1 @@
+This Binary Heap uses a vector as an underlying structure.
