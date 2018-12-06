@@ -1,0 +1,22 @@
+# Created by .ignore support plugin (hsz.mobi)
+### CMake template
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+CMakeLists.txt
+cmake-build-debug/
