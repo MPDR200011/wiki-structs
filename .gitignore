@@ -18,5 +18,10 @@ CTestTestfile.cmake
 out
 gen
 
-CMakeLists.txt
 cmake-build-debug/
+
+.cache/
+DartConfiguration.tcl
+lib/
+tests
+tests*.cmake
