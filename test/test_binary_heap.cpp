@@ -70,7 +70,8 @@ SCENARIO("binary heap sorts items", "[binary_heap]") {
                 heap.pop();
             }
             THEN("they come out in ascending order") {
-                REQUIRE( std::is_sorted(std::begin(popped), std::end(popped)) );
+                std::vector<int> test = {-3, 1, 2, 4, 10};
+                REQUIRE(std::equal(test.begin(), test.end(), popped.begin()));
             }
         }
     }
