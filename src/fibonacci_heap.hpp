@@ -10,7 +10,9 @@
 template <typename T, typename Comparator = std::less<T>>
 class fibonacci_heap {
     struct Node;
+public:
     typedef std::shared_ptr<Node> NodeHandle;
+private:
 
     static void linkNodes(NodeHandle left, NodeHandle right) {
         left->m_nextSibling = right;
@@ -64,13 +66,13 @@ class fibonacci_heap {
     size_t m_size;
 
     void cutNode(NodeHandle& node) {
-        NodeHandle parent = node->parent;
+        NodeHandle parent = node->m_parent;
 
         // cut node from parent
-        node->parent.reset();
+        node->m_parent.reset();
 
         // make it a root
-        linkNodes(m_listHead->m_previousSibling, node);
+        linkNodes(m_listHead->m_prevSibling, node);
         linkNodes(node, m_listHead);
         node->m_marked = false;
 
@@ -178,9 +180,8 @@ public:
             check = false;
             NodeHandle curr = m_listHead;
             do {
-                std::cout << curr->m_value;
                 size_t degree = curr->degree();
-                NodeHandle next = curr->m_nextSibling;
+                NodeHandle next = curr->m_nextSibling; // prefetch the next node
                 if (!degrees[degree]) {
                     degrees[degree] = curr;
                 } else if (degrees[degree] != curr) {
@@ -210,6 +211,11 @@ public:
                         // we might be deleting the head from the list, it needs to be updated
                         m_listHead = smaller->m_nextSibling;
                     }
+
+                    if (bigger == next) {
+                        // next node might have been the one moved, so it needs to be replaced
+                        next = m_listHead;
+                    }
                 }
                 curr = next;
             } while (curr != m_listHead);
@@ -227,7 +233,7 @@ public:
         m_minimumValueNode = minimumNode;
     }
 
-    void decrease_key(const NodeHandle& node) {
+    void decrease_key(NodeHandle& node) {
         /* Operation decrease key will take the node, decrease the key and if the heap property becomes violated 
          * (the new key is smaller than the key of the parent), the node is cut from its parent. If the parent is 
          * not a root, it is marked. If it has been marked already, it is cut as well and its parent is marked.
@@ -235,8 +241,8 @@ public:
          * to the decreased value if it is the new minimum. 
          * Unmark nodes as they becomes roots.
          */
-        if (node->parent) {
-            if (compare(node->m_value, node->parent->m_value)) {
+        if (node->m_parent) {
+            if (compare(node->m_value, node->m_parent->m_value)) {
                 // node now violates the heap roperty
                 cutNode(node);
             }
@@ -245,5 +251,14 @@ public:
         if (compare(node->m_value, m_minimumValueNode->m_value)) {
             m_minimumValueNode = node;
         }
+    }
+
+    void decrease_key(NodeHandle& node, T newValue) {
+        if (compare(node->m_value, newValue)) {
+            throw std::invalid_argument("deacrese_key: New key value is higher than alredy existing.");
+        }
+
+        node->m_value = newValue;
+        decrease_key(node);
     }
 };
