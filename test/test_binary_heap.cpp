@@ -40,33 +40,33 @@ SCENARIO("binary heap sorts items", "[binary_heap]") {
         heap.push(-3);
         heap.push(1);
 
-        REQUIRE( heap.top() == -3 );
+        REQUIRE( heap.peek() == -3 );
         
         WHEN("new min is added") {
             heap.push(-4);
             THEN("the heaps top changes") {
-                REQUIRE( heap.top() == -4 );
+                REQUIRE( heap.peek() == -4 );
             }
         }
 
         WHEN("non min value is added") {
             heap.push(11);
             THEN("the heaps top doesn't change") {
-                REQUIRE( heap.top() == -3 );
+                REQUIRE( heap.peek() == -3 );
             }
         }
 
         WHEN("value is poped from the heap") {
             heap.pop();
             THEN("the heaps top changes") {
-                REQUIRE( heap.top() == 1 );
+                REQUIRE( heap.peek() == 1 );
             }
         }
 
         WHEN("all values are popped from the heap") {
             std::vector<int> popped;
             while (!heap.empty()) {
-                popped.push_back(heap.top());
+                popped.push_back(heap.peek());
                 heap.pop();
             }
             THEN("they come out in ascending order") {

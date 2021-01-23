@@ -5,7 +5,8 @@
 #include <stdexcept>
 #include <iostream>
 
-template<class T, typename Comparator = std::less<T>> class BinaryHeap {
+template<class T, typename Comparator = std::less<T>>
+class BinaryHeap {
 private:
     typedef std::vector<T> Container;
 
@@ -71,7 +72,7 @@ public:
         bubble_up(childIndex);
     }
 
-    const_reference top() {
+    const_reference peek() {
         if (empty()) {
             throw std::out_of_range("Heap is empty.");
         }
