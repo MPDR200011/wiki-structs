@@ -5,7 +5,8 @@
 #include <stdexcept>
 #include <iostream>
 
-template<class T, typename Comparator = std::less<T>> class BinaryHeap {
+template<class T, typename Comparator = std::less<T>>
+class BinaryHeap {
 private:
     typedef std::vector<T> Container;
 
@@ -61,6 +62,10 @@ private:
 
         } while (swapped);
     }
+
+    T& unsafe_peek() {
+        return container[0];
+    }
 public:
     BinaryHeap() {};
 
@@ -71,12 +76,12 @@ public:
         bubble_up(childIndex);
     }
 
-    const_reference top() {
+    const_reference peek() {
         if (empty()) {
             throw std::out_of_range("Heap is empty.");
         }
 
-        return container[0];
+        return unsafe_peek();
     }
 
     void pop() {
@@ -88,6 +93,26 @@ public:
         container.pop_back();
 
         bubble_down();
+    }
+
+    T pushPop(T val) {
+        if (!empty() && compare(unsafe_peek(), val)) {
+            std::swap(unsafe_peek(), val);
+            bubble_down();
+        }
+
+        return val;
+    }
+
+    T replace(T val) {
+        if (empty()) {
+            throw std::out_of_range("Heap is empty.");
+        }
+
+        std::swap(unsafe_peek(), val);
+        bubble_down();
+
+        return val;
     }
 
     size_t size() {
