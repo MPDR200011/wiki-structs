@@ -58,7 +58,7 @@ SCENARIO("binary heap sorts items", "[binary_heap]") {
 
         WHEN("value is poped from the heap") {
             heap.pop();
-            THEN("the heaps top doesn't change") {
+            THEN("the heaps top changes") {
                 REQUIRE( heap.top() == 1 );
             }
         }
