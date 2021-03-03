@@ -96,7 +96,7 @@ public:
     }
 
     T pushPop(T val) {
-        if (!empty() && compare(unsafe_peek(), val)) {
+        if (!empty() && !compare(val, unsafe_peek())) {
             std::swap(unsafe_peek(), val);
             bubble_down();
         }

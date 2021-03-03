@@ -145,3 +145,47 @@ TEST_CASE("Cannot peek, pop, or pop-push/replace on an empty Heap.", "[binary_he
         REQUIRE( true );
     }
 }
+
+SCENARIO("Push-pop and pop-push work correctly.", "[binary_heap]") {
+    struct TestStruct {
+        std::string value;
+        int key;
+
+        bool operator<(const TestStruct & s2) const {
+            return key < s2.key;
+        }
+    };
+
+    GIVEN("A binary heap has some elements") {
+        BinaryHeap<TestStruct> heap;
+
+        heap.push(TestStruct{.value = "2", .key=2});
+        heap.push(TestStruct{.value = "5", .key=5});
+        heap.push(TestStruct{.value = "7", .key=7});
+        heap.push(TestStruct{.value = "11", .key=11});
+        heap.push(TestStruct{.value = "16", .key=16});
+
+        REQUIRE( heap.peek().value == "2" );
+
+        WHEN("A new minimum is push-popped") {
+            auto res = heap.pushPop(TestStruct{.value = "1000", .key=1});
+            THEN("The same value is returned.") {
+                REQUIRE( res.value == "1000" );
+            }
+        }
+
+        WHEN("A value with same key as minimum is push-popped.") {
+            auto res = heap.pushPop(TestStruct{.value = "1000", .key=2});
+            THEN("The original minimum is returned.") {
+                REQUIRE( res.value == "2" );
+            }
+        }
+
+        WHEN("A value that is not lower than the minimum is push-popped.") {
+            auto res = heap.pushPop(TestStruct{.value = "1000", .key=8});
+            THEN("The original minimum is returned.") {
+                REQUIRE( res.value == "2" );
+            }
+        }
+    }
+}
