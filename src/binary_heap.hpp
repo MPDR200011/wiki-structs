@@ -63,11 +63,11 @@ private:
         } while (swapped);
     }
 
-    T& unsafe_peek() {
+    inline T& unsafe_peek() {
         return container[0];
     }
 public:
-    BinaryHeap() {};
+    BinaryHeap() = default;
 
     void push(const T &val) {
         size_t childIndex = container.size();
