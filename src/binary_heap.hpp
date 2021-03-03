@@ -26,7 +26,7 @@ private:
     void bubble_up(size_t index) {
         size_t childIndex = index;
         size_t parentIndex = calc_parent_index(childIndex);
-        while (compare(container[childIndex], container[parentIndex]) && childIndex != 0) {
+        while (childIndex != 0 && compare(container[childIndex], container[parentIndex])) {
             std::swap(container[parentIndex], container[childIndex]);
             childIndex = parentIndex;
             parentIndex = calc_parent_index(childIndex);
