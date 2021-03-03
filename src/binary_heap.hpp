@@ -6,7 +6,7 @@
 #include <iostream>
 
 template<class T, typename Comparator = std::less<T>>
-class BinaryHeap {
+class binary_heap {
 private:
     typedef std::vector<T> Container;
 
@@ -67,7 +67,7 @@ private:
         return container[0];
     }
 public:
-    BinaryHeap() = default;
+    binary_heap() = default;
 
     void push(const T &val) {
         size_t childIndex = container.size();
