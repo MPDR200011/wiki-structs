@@ -100,19 +100,18 @@ TEST_CASE("can't pop empty heap", "[fibonacci_heap]") {
     }
 }
 
-struct TestStruct {
-    int value;
-
-    bool operator<(const TestStruct& rhs) const {
-        return value < rhs.value;
-    }
-
-    bool operator==(const TestStruct& rhs) const {
-        return value == rhs.value;
-    }
-};
-
 SCENARIO("fibonacci heap does proper decrease key", "[fibonacci_heap]") {
+    struct TestStruct {
+        int value;
+
+        bool operator<(const TestStruct& rhs) const {
+            return value < rhs.value;
+        }
+
+        bool operator==(const TestStruct& rhs) const {
+            return value == rhs.value;
+        }
+    };
 
     GIVEN("binary heap has some items") {
         fibonacci_heap<TestStruct> heap;
@@ -173,6 +172,18 @@ SCENARIO("fibonacci heap does proper decrease key", "[fibonacci_heap]") {
 }
 
 TEST_CASE("can't decrease key to higher value", "[fibonacci_heap]") {
+    struct TestStruct {
+        int value;
+
+        bool operator<(const TestStruct& rhs) const {
+            return value < rhs.value;
+        }
+
+        bool operator==(const TestStruct& rhs) const {
+            return value == rhs.value;
+        }
+    };
+
     fibonacci_heap<TestStruct> heap;
     fibonacci_heap<TestStruct>::NodeHandle handle = heap.push(TestStruct{1});
 
