@@ -6,45 +6,45 @@
 #include <iostream>
 
 template<class T, typename Comparator = std::less<T>>
-class binary_heap {
+class BinaryHeap {
 private:
     typedef std::vector<T> Container;
 
     Container container;
     Comparator compare;
 
-    typedef typename Container::const_reference const_reference;
+    using ConstReference = typename Container::const_reference;
 
-    inline size_t calc_parent_index(size_t child_index) {
-        return (child_index-1)/2;
+    inline size_t calcParentIndex(size_t childIndex) {
+        return (childIndex-1)/2;
     }
 
-    inline size_t calc_children_index(size_t parent_index) {
-        return parent_index*2+1;
+    inline size_t calcChildrenIndex(size_t parentIndex) {
+        return parentIndex*2+1;
     }
 
-    void bubble_up(size_t index) {
+    void bubbleUp(size_t index) {
         size_t childIndex = index;
-        size_t parentIndex = calc_parent_index(childIndex);
+        size_t parentIndex = calcParentIndex(childIndex);
         while (childIndex != 0 && compare(container[childIndex], container[parentIndex])) {
             std::swap(container[parentIndex], container[childIndex]);
             childIndex = parentIndex;
-            parentIndex = calc_parent_index(childIndex);
+            parentIndex = calcParentIndex(childIndex);
         }
     }
 
-    void bubble_down() {
+    void bubbleDown() {
         unsigned long parentIndex = 0;
-        unsigned long childrenIndex = calc_children_index(parentIndex);
+        unsigned long childrenIndex = calcChildrenIndex(parentIndex);
 
-        size_t container_size = container.size();
+        size_t containerSize = container.size();
         bool swapped;
         do {
             unsigned long minIndex = parentIndex;
-            if (childrenIndex < container_size) {
+            if (childrenIndex < containerSize) {
                 minIndex = childrenIndex;
 
-                if (childrenIndex+1 < container_size) {
+                if (childrenIndex+1 < containerSize) {
                     if (compare(container[childrenIndex+1],container[minIndex])) {
                         minIndex = childrenIndex+1;
                     }
@@ -63,25 +63,25 @@ private:
         } while (swapped);
     }
 
-    inline T& unsafe_peek() {
+    inline T& unsafePeek() {
         return container[0];
     }
 public:
-    binary_heap() = default;
+    BinaryHeap() = default;
 
     void push(const T &val) {
         size_t childIndex = container.size();
         container.push_back(val);
 
-        bubble_up(childIndex);
+        bubbleUp(childIndex);
     }
 
-    const_reference peek() {
+    ConstReference peek() {
         if (empty()) {
             throw std::out_of_range("Heap is empty.");
         }
 
-        return unsafe_peek();
+        return unsafePeek();
     }
 
     void pop() {
@@ -92,13 +92,13 @@ public:
         std::iter_swap(container.begin(), container.end()-1);
         container.pop_back();
 
-        bubble_down();
+        bubbleDown();
     }
 
     T pushPop(T val) {
-        if (!empty() && !compare(val, unsafe_peek())) {
-            std::swap(unsafe_peek(), val);
-            bubble_down();
+        if (!empty() && !compare(val, unsafePeek())) {
+            std::swap(unsafePeek(), val);
+            bubbleDown();
         }
 
         return val;
@@ -109,8 +109,8 @@ public:
             throw std::out_of_range("Heap is empty.");
         }
 
-        std::swap(unsafe_peek(), val);
-        bubble_down();
+        std::swap(unsafePeek(), val);
+        bubbleDown();
 
         return val;
     }

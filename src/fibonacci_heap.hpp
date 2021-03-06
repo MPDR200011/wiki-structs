@@ -8,77 +8,77 @@
 #include <cmath>
 
 template <typename T, typename Comparator = std::less<T>>
-class fibonacci_heap {
+class FibonacciHeap {
     struct Node;
 public:
     typedef std::shared_ptr<Node> NodeHandle;
 private:
 
-    static void linkNodes(NodeHandle left, NodeHandle right) {
-        left->m_nextSibling = right;
-        right->m_prevSibling = left;
-    }
-
     struct Node {
-        T m_value;
-        NodeHandle m_parent;
-        NodeHandle m_nextSibling;
-        NodeHandle m_prevSibling;
-        NodeHandle m_firstChild;
-        size_t m_degree;
-        bool m_marked;
+        T value;
+        NodeHandle parent;
+        NodeHandle nextSibling;
+        NodeHandle prevSibling;
+        NodeHandle firstChild;
+        size_t degree;
+        bool marked;
 
-        Node(T& value) : m_value(value), m_degree{0}, m_marked{false} {}
+        Node(T& value) : value(value), degree{0}, marked{false} {}
 
-        size_t degree() { return m_degree; }
+        size_t getDegree() { return degree; }
 
         void addChild(NodeHandle& newChild) {
-            if (m_firstChild) {
-                linkNodes(m_firstChild->m_prevSibling, newChild);
-                linkNodes(newChild, m_firstChild);
+            if (firstChild) {
+                linkNodes(firstChild->prevSibling, newChild);
+                linkNodes(newChild, firstChild);
             } else {
-                m_firstChild = newChild;
-                linkNodes(m_firstChild, m_firstChild);
+                firstChild = newChild;
+                linkNodes(firstChild, firstChild);
             }
-            ++m_degree;
+            ++degree;
         }
 
         void removeChild(NodeHandle& child) {
-            link(child->m_prevSibling, child->m_nextSibling);
+            link(child->prevSibling, child->nextSibling);
 
-            if (child == m_firstChild) {
+            if (child == firstChild) {
                 // if we are removing the first child, set the next sibling as new first child
-                m_firstChild = m_firstChild->m_nextSibling;
+                firstChild = firstChild->nextSibling;
 
-                if (m_firstChild == child) {
+                if (firstChild == child) {
                     // if after that nothing changed, then it means that we are trying to remove the only existing
                     // child, if so, reset the first child
-                    m_firstChild.reset();
+                    firstChild.reset();
                 }
             }
-            --m_degree;
+            --degree;
         }
     };
 
-    NodeHandle m_listHead;
-    NodeHandle m_minimumValueNode;
+    static void linkNodes(NodeHandle left, NodeHandle right) {
+        left->nextSibling = right;
+        right->prevSibling = left;
+    }
+
+    NodeHandle listHead;
+    NodeHandle minimumValueNode;
     Comparator compare;
     size_t m_size;
 
     void cutNode(NodeHandle& node) {
-        NodeHandle parent = node->m_parent;
+        NodeHandle parent = node->parent;
 
         // cut node from parent
-        node->m_parent.reset();
+        node->parent.reset();
 
         // make it a root
-        linkNodes(m_listHead->m_prevSibling, node);
-        linkNodes(node, m_listHead);
-        node->m_marked = false;
+        linkNodes(listHead->prevSibling, node);
+        linkNodes(node, listHead);
+        node->marked = false;
 
         // mark parent
-        bool parentMarked = parent->m_marked;
-        parent->m_marked = true;
+        bool parentMarked = parent->marked;
+        parent->marked = true;
         if (parentMarked) {
             //if previously marked cut it as well
             cutNode(parent);
@@ -86,14 +86,14 @@ private:
     }
 
     void makeNodeRoot(NodeHandle& node) {
-        linkNodes(m_listHead->m_prevSibling, node);
-        linkNodes(node, m_listHead);
-        node->m_parent.reset();
-        node->m_marked = false;
+        linkNodes(listHead->prevSibling, node);
+        linkNodes(node, listHead);
+        node->parent.reset();
+        node->marked = false;
     }
 
 public:
-    fibonacci_heap() : m_size{0} {}
+    FibonacciHeap() : m_size{0} {}
 
     size_t size() { return m_size; }
 
@@ -104,20 +104,20 @@ public:
          * This takes constant time, and the potential increases by one, because the number of trees increases.
          * The amortized cost is thus still constant.*/
         if (m_size == 0) {
-            m_listHead = std::make_shared<Node>(value);
-            m_minimumValueNode = m_listHead;
-            linkNodes(m_listHead, m_listHead);
+            listHead = std::make_shared<Node>(value);
+            minimumValueNode = listHead;
+            linkNodes(listHead, listHead);
             ++m_size;
-            return m_minimumValueNode;
+            return minimumValueNode;
         }
 
         NodeHandle newNode = std::make_shared<Node>(value);
-        linkNodes(m_listHead->m_prevSibling, newNode);
-        linkNodes(newNode, m_listHead);
+        linkNodes(listHead->prevSibling, newNode);
+        linkNodes(newNode, listHead);
         ++m_size;
 
-        if (compare(newNode->m_value, m_minimumValueNode->m_value)) {
-            m_minimumValueNode = newNode;
+        if (compare(newNode->value, minimumValueNode->value)) {
+            minimumValueNode = newNode;
         }
 
         return newNode;
@@ -129,7 +129,7 @@ public:
             throw std::out_of_range("Heap is empty.");
         }
 
-        return m_minimumValueNode->m_value;
+        return minimumValueNode->value;
     }
 
     void pop() {
@@ -138,29 +138,29 @@ public:
          * First we take the root containing the minimum element and remove it. 
          * Its children will become roots of new trees. 
          */
-        if (m_minimumValueNode->degree() > 0) {
-            NodeHandle current = m_minimumValueNode->m_firstChild;
+        if (minimumValueNode->getDegree() > 0) {
+            NodeHandle current = minimumValueNode->firstChild;
             do {
-                auto next = current->m_nextSibling;
+                auto next = current->nextSibling;
                 makeNodeRoot(current);
                 current = next;
-            } while (current != m_minimumValueNode->m_firstChild);
+            } while (current != minimumValueNode->firstChild);
         } 
 
-        linkNodes(m_minimumValueNode->m_prevSibling, m_minimumValueNode->m_nextSibling);
+        linkNodes(minimumValueNode->prevSibling, minimumValueNode->nextSibling);
 
         // change list head if it was the minimum value node
-        if (m_minimumValueNode == m_listHead) {
-            m_listHead = m_minimumValueNode->m_nextSibling;
+        if (minimumValueNode == listHead) {
+            listHead = minimumValueNode->nextSibling;
         }
 
-        m_minimumValueNode.reset();
+        minimumValueNode.reset();
         --m_size;
 
         if (empty()) {
-            m_listHead.reset();
+            listHead.reset();
             return;
-        };
+        }
 
         /* However to complete the extract minimum operation, we need to update the pointer to the root with 
          * minimum key. Unfortunately there may be up to n roots we need to check. In the second phase we therefore 
@@ -178,10 +178,10 @@ public:
         bool check = true;
         while (check) {
             check = false;
-            NodeHandle curr = m_listHead;
+            NodeHandle curr = listHead;
             do {
-                size_t degree = curr->degree();
-                NodeHandle next = curr->m_nextSibling; // prefetch the next node
+                size_t degree = curr->getDegree();
+                NodeHandle next = curr->nextSibling; // prefetch the next node
                 if (!degrees[degree]) {
                     degrees[degree] = curr;
                 } else if (degrees[degree] != curr) {
@@ -192,7 +192,7 @@ public:
                     NodeHandle smaller;
 
                     // check which is smaller
-                    if (compare(degrees[degree]->m_value, curr->m_value)) {
+                    if (compare(degrees[degree]->value, curr->value)) {
                         bigger = curr;
                         smaller = degrees[degree];
                     } else {
@@ -201,39 +201,39 @@ public:
                     }
 
 
-                    linkNodes(bigger->m_prevSibling, bigger->m_nextSibling); // unlink bigger from list
+                    linkNodes(bigger->prevSibling, bigger->nextSibling); // unlink bigger from list
                     smaller->addChild(bigger); // add it to children of smaller
-                    bigger->m_parent = smaller; // set the parent of bigger
+                    bigger->parent = smaller; // set the parent of bigger
 
                     degrees[degree].reset(); // reset the value in the vector as the node's degree has been updated
 
-                    if (bigger == m_listHead) {
+                    if (bigger == listHead) {
                         // we might be deleting the head from the list, it needs to be updated
-                        m_listHead = smaller->m_nextSibling;
+                        listHead = smaller->nextSibling;
                     }
 
                     if (bigger == next) {
                         // next node might have been the one moved, so it needs to be replaced
-                        next = m_listHead;
+                        next = listHead;
                     }
                 }
                 curr = next;
-            } while (curr != m_listHead);
+            } while (curr != listHead);
         }
 
-        NodeHandle minimumNode = m_listHead;
-        NodeHandle current = m_listHead;
+        NodeHandle minimumNode = listHead;
+        NodeHandle current = listHead;
         do {
-            if (compare(current->m_value, minimumNode->m_value)) {
+            if (compare(current->value, minimumNode->value)) {
                 minimumNode = current;
             }
-            current = current->m_nextSibling;
-        } while (current != m_listHead);
+            current = current->nextSibling;
+        } while (current != listHead);
 
-        m_minimumValueNode = minimumNode;
+        minimumValueNode = minimumNode;
     }
 
-    void decrease_key(NodeHandle& node) {
+    void decreaseKey(NodeHandle& node) {
         /* Operation decrease key will take the node, decrease the key and if the heap property becomes violated 
          * (the new key is smaller than the key of the parent), the node is cut from its parent. If the parent is 
          * not a root, it is marked. If it has been marked already, it is cut as well and its parent is marked.
@@ -241,24 +241,24 @@ public:
          * to the decreased value if it is the new minimum. 
          * Unmark nodes as they becomes roots.
          */
-        if (node->m_parent) {
-            if (compare(node->m_value, node->m_parent->m_value)) {
+        if (node->parent) {
+            if (compare(node->value, node->parent->value)) {
                 // node now violates the heap roperty
                 cutNode(node);
             }
         }
 
-        if (compare(node->m_value, m_minimumValueNode->m_value)) {
-            m_minimumValueNode = node;
+        if (compare(node->value, minimumValueNode->value)) {
+            minimumValueNode = node;
         }
     }
 
-    void decrease_key(NodeHandle& node, T newValue) {
-        if (compare(node->m_value, newValue)) {
-            throw std::invalid_argument("deacrese_key: New key value is higher than alredy existing.");
+    void decreaseKey(NodeHandle& node, T newValue) {
+        if (compare(node->value, newValue)) {
+            throw std::invalid_argument("decreaseKey: New key value is higher than alredy existing.");
         }
 
-        node->m_value = newValue;
-        decrease_key(node);
+        node->value = newValue;
+        decreaseKey(node);
     }
 };

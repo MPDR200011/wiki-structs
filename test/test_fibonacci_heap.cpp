@@ -5,7 +5,7 @@
 
 SCENARIO("heap has correct size", "[fibonacci_heap]") {
     GIVEN("binary heap has some items") {
-        fibonacci_heap<int> heap;
+        FibonacciHeap<int> heap;
 
         heap.push(4);
         heap.push(2);
@@ -33,7 +33,7 @@ SCENARIO("heap has correct size", "[fibonacci_heap]") {
 
 SCENARIO("heap sorts items", "[fibonacci_heap]") {
     GIVEN("binary heap has some items") {
-        fibonacci_heap<int> heap;
+        FibonacciHeap<int> heap;
 
         heap.push(4);
         heap.push(2);
@@ -79,7 +79,7 @@ SCENARIO("heap sorts items", "[fibonacci_heap]") {
 }
 
 TEST_CASE("can't peek empty heap", "[fibonacci_heap]") {
-    fibonacci_heap<int> heap;
+    FibonacciHeap<int> heap;
     try {
         heap.peek();
         REQUIRE(false);
@@ -89,7 +89,7 @@ TEST_CASE("can't peek empty heap", "[fibonacci_heap]") {
 }
 
 TEST_CASE("can't pop empty heap", "[fibonacci_heap]") {
-    fibonacci_heap<int> heap;
+    FibonacciHeap<int> heap;
     heap.push(1);
     heap.pop();
     try {
@@ -114,7 +114,7 @@ SCENARIO("fibonacci heap does proper decrease key", "[fibonacci_heap]") {
     };
 
     GIVEN("binary heap has some items") {
-        fibonacci_heap<TestStruct> heap;
+        FibonacciHeap<TestStruct> heap;
 
         heap.push(TestStruct{2});
         heap.push(TestStruct{3});
@@ -123,12 +123,12 @@ SCENARIO("fibonacci heap does proper decrease key", "[fibonacci_heap]") {
         heap.push(TestStruct{-4});
 
         TestStruct variable{10};
-        fibonacci_heap<TestStruct>::NodeHandle handle = heap.push(variable);
+        FibonacciHeap<TestStruct>::NodeHandle handle = heap.push(variable);
 
         REQUIRE(heap.peek().value == -4);
 
         WHEN("key of an item is reduced to the lowest") {
-            heap.decrease_key(handle, TestStruct{-10});
+            heap.decreaseKey(handle, TestStruct{-10});
 
             THEN("it becomes the new lowest") {
                 REQUIRE(heap.peek().value == -10);
@@ -143,7 +143,7 @@ SCENARIO("fibonacci heap does proper decrease key", "[fibonacci_heap]") {
             }
         };
 
-        fibonacci_heap<TestStruct*, TestStrcutPtrCmp> heap;
+        FibonacciHeap<TestStruct*, TestStrcutPtrCmp> heap;
 
         heap.push(new TestStruct{2});
         heap.push(new TestStruct{3});
@@ -154,14 +154,14 @@ SCENARIO("fibonacci heap does proper decrease key", "[fibonacci_heap]") {
         heap.push(lowest);
 
         TestStruct* variable = new TestStruct{10};
-        fibonacci_heap<TestStruct*, TestStrcutPtrCmp>::NodeHandle handle = heap.push(variable);
+        FibonacciHeap<TestStruct*, TestStrcutPtrCmp>::NodeHandle handle = heap.push(variable);
 
         REQUIRE(heap.peek() == lowest);
         REQUIRE(heap.peek()->value == -4);
 
         WHEN("key of an item is reduced through the pointer") {
             variable->value = -10;
-            heap.decrease_key(handle);
+            heap.decreaseKey(handle);
 
             THEN("it becomes the new lowest, and the returned pointer is the same") {
                 REQUIRE(heap.peek() == variable);
@@ -184,12 +184,12 @@ TEST_CASE("can't decrease key to higher value", "[fibonacci_heap]") {
         }
     };
 
-    fibonacci_heap<TestStruct> heap;
-    fibonacci_heap<TestStruct>::NodeHandle handle = heap.push(TestStruct{1});
+    FibonacciHeap<TestStruct> heap;
+    FibonacciHeap<TestStruct>::NodeHandle handle = heap.push(TestStruct{1});
 
-    heap.decrease_key(handle, TestStruct{-1});
+    heap.decreaseKey(handle, TestStruct{-1});
     try {
-        heap.decrease_key(handle, TestStruct{10});
+        heap.decreaseKey(handle, TestStruct{10});
         REQUIRE(false);
     } catch(...) {
         REQUIRE(true);

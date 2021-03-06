@@ -4,7 +4,7 @@
 
 SCENARIO("binary heap changes size", "[binary_heap]") {
     GIVEN("binary heap has some items") {
-        binary_heap<int> heap;
+        BinaryHeap<int> heap;
 
         heap.push(4);
         heap.push(2);
@@ -32,7 +32,7 @@ SCENARIO("binary heap changes size", "[binary_heap]") {
 
 SCENARIO("binary heap sorts items", "[binary_heap]") {
     GIVEN("binary heap has some items") {
-        binary_heap<int> heap;
+        BinaryHeap<int> heap;
 
         heap.push(4);
         heap.push(2);
@@ -79,7 +79,7 @@ SCENARIO("binary heap sorts items", "[binary_heap]") {
 
 SCENARIO("binary heap puhs-pop and pop-push/replace work correctly", "[binary_heap]") {
     GIVEN("binary heap has some items") {
-        binary_heap<int> heap;
+        BinaryHeap<int> heap;
 
         heap.push(4);
         heap.push(2);
@@ -122,7 +122,7 @@ SCENARIO("binary heap puhs-pop and pop-push/replace work correctly", "[binary_he
 }
 
 TEST_CASE("Cannot peek, pop, or pop-push/replace on an empty Heap.", "[binary_heap]") {
-    binary_heap<int> heap;
+    BinaryHeap<int> heap;
 
     try {
         heap.peek();
@@ -157,7 +157,7 @@ SCENARIO("Push-pop and pop-push work correctly.", "[binary_heap]") {
     };
 
     GIVEN("A binary heap has some elements") {
-        binary_heap<TestStruct> heap;
+        BinaryHeap<TestStruct> heap;
 
         heap.push(TestStruct{.value = "2", .key=2});
         heap.push(TestStruct{.value = "5", .key=5});
