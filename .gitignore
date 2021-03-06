@@ -4,10 +4,8 @@ CMakeCache.txt
 CMakeFiles
 CMakeScripts
 Testing
-Makefile
 cmake_install.cmake
 install_manifest.txt
-compile_commands.json
 CTestTestfile.cmake
 ### Example user template template
 ### Example user template
@@ -21,7 +19,5 @@ gen
 cmake-build-debug/
 
 .cache/
-DartConfiguration.tcl
 lib/
-tests
-tests*.cmake
+compile_commands.json
